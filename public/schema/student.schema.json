@@ -1,45 +1,21 @@
-
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Student",
-    "type": "object",
-    "properties": {
-        "id": {
-            "type": "integer"
-        },
-        "roll_no": {
-            "type": "string"
-        },
-        "name": {
-            "type": "string"
-        },
-        "email": {
-            "type": "string",
-            "format": "email"
-        },
-        "department": {
-            "type": "string"
-        },
-        "semester": {
-            "type": "integer"
-        },
-        "cgpa": {
-            "type": ["number", "null"]
-        },
-        "created_at": {
-            "type": ["string", "null"]
-        },
-        "updated_at": {
-            "type": ["string", "null"]
-        }
-    },
-    "required": [
-        "id",
-        "roll_no",
-        "name",
-        "email",
-        "department",
-        "semester",
-        "cgpa"
-    ]
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/schema/student.schema.json",
+  "title": "Student",
+  "description": "One row of the students table (CST463 Laravel Lab, Activity 6).",
+  "type": "object",
+  "properties": {
+    "id":         { "type": "integer", "minimum": 1, "description": "Auto-increment primary key" },
+    "roll_no":    { "type": "string", "minLength": 1, "maxLength": 20, "description": "Unique roll number, e.g. 11 or CS23-01" },
+    "reg_no":     { "type": ["string", "null"], "maxLength": 20, "description": "University register number, e.g. NSS23CS011" },
+    "name":       { "type": "string", "minLength": 1, "maxLength": 100 },
+    "email":      { "type": "string", "format": "email", "maxLength": 150 },
+    "department": { "type": "string", "default": "CSE", "maxLength": 50 },
+    "semester":   { "type": "integer", "minimum": 1, "maximum": 8, "default": 7 },
+    "cgpa":       { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+    "created_at": { "type": ["string", "null"], "format": "date-time" },
+    "updated_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "required": ["roll_no", "name", "email"],
+  "additionalProperties": false
 }

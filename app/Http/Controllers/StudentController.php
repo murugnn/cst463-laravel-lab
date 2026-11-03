@@ -1,43 +1,79 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class StudentController extends Controller
 {
-    public function index()
+    // GET /students
+    public function index(): View
     {
-        $students = Student::all();
+        $students = Student::orderBy('id')->get();
 
         return view('students.index', compact('students'));
     }
 
-    public function create()
+    // GET /students/create
+    public function create(): View
     {
         return view('students.create');
     }
 
-    public function store(Request $request)
+    // POST /students
+    public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'roll_no' => 'required|string|max:255|unique:students,roll_no',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:students,email',
-            'department' => 'nullable|string|max:255',
-            'semester' => 'nullable|integer|min:1|max:255',
-            'cgpa' => 'nullable|numeric|min:0|max:10',
-        ]);
+        $validated = $request->validate($this->rules());
 
-        $student = Student::create($validated);
+        Student::create($validated);
 
         return redirect()
-            ->route('students.show', $student)
+            ->route('students.index')
             ->with('status', 'Student saved successfully!');
     }
 
-    public function show(Student $student)
+    // GET /students/{student}  — implicit route model binding (unknown id => 404)
+    public function show(Student $student): View
     {
         return view('students.show', compact('student'));
+    }
+
+    // GET /students/{student}/edit
+    public function edit(Student $student): View
+    {
+        return view('students.edit', compact('student'));
+    }
+
+    // PUT/PATCH /students/{student}
+    public function update(Request $request, Student $student): RedirectResponse
+    {
+        $student->update($request->validate($this->rules($student)));
+
+        return redirect()->route('students.show', $student)->with('status', 'Student updated successfully!');
+    }
+
+    // DELETE /students/{student}
+    public function destroy(Student $student): RedirectResponse
+    {
+        $student->delete();
+
+        return redirect()->route('students.index')->with('status', 'Student deleted successfully!');
+    }
+
+    private function rules(?Student $student = null): array
+    {
+        return [
+            'roll_no'    => ['required', 'string', 'max:20', Rule::unique('students', 'roll_no')->ignore($student)],
+            'reg_no'     => ['nullable', 'string', 'max:20', Rule::unique('students', 'reg_no')->ignore($student)],
+            'name'       => ['required', 'string', 'max:100'],
+            'email'      => ['required', 'email', 'max:150', Rule::unique('students', 'email')->ignore($student)],
+            'department' => ['required', 'string', 'max:50'],
+            'semester'   => ['required', 'integer', 'between:1,8'],
+            'cgpa'       => ['nullable', 'numeric', 'between:0,10'],
+        ];
     }
 }

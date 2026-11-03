@@ -1,16 +1,19 @@
+ @extends('layouts.app')
 
-@extends('layouts.app')
+@section('title', 'Student List')
 
 @section('content')
     <h1>Student List</h1>
 
-    @if(session('status'))
-        <p>{{ session('status') }}</p>
+    @if (session('status'))
+        <div id="status" role="status">
+            {{ session('status') }}
+        </div>
     @endif
 
     <a href="{{ route('students.create') }}">Add Student</a>
 
-    @foreach($students as $student)
+    @foreach ($students as $student)
         <div>
             <p>
                 <a href="{{ route('students.show', $student) }}">
